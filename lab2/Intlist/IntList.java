@@ -82,7 +82,17 @@ public class IntList {
 
     public static IntList dcatenate(IntList A, IntList B) {
         //TODO:  fill in method
-        return null;
+        if (A == null) {
+            return B;
+        }
+        // 找到列表 A 的最后一个节点
+        IntList current = A;
+        while (current.rest != null) {
+            current = current.rest;
+        }
+        // 将列表 A 的最后一个节点的 next 指针指向 B
+        current.rest = B;
+        return A;
     }
 
     /**
@@ -91,7 +101,19 @@ public class IntList {
      */
     public static IntList catenate(IntList A, IntList B) {
         //TODO:  fill in method
-        return null;
+        if (A == null) {
+            return B;
+        }
+        IntList result = new IntList(A.first, null);
+        IntList current = result;
+        A = A.rest;
+        while (A != null) {
+            current.rest = new IntList(A.first, null);
+            A = A.rest;
+            current = current.rest;
+        }
+        current.rest = B;
+        return result;
     }
 
 
