@@ -1,18 +1,43 @@
 public class LinkedListDeque<T> {
-    private class Node {
-        private T item;
-        private Node prev;
-        private Node next;
+    public class Node {
+        public T item;
+        public Node prev;
+        public Node next;
 
-        private Node(T i, Node p, Node n) {
+        public Node(T i, Node p, Node n) {
             item = i;
             prev = p;
             next = n;
         }
     }
 
-    private Node sentinel;
-    private int size;
+    public Node sentinel;
+    public int size;
+
+    public T get(int index) {
+        if (index >= size || index < 0) {
+            return null; // 索引超出范围
+        }
+        Node current = sentinel.next;
+        for (int i = 0; i < index; i++) {
+            current = current.next;
+        }
+        return current.item;
+    }
+
+    public T getRecursive(int index) {
+        if (index >= size || index < 0) {
+            return null;
+        }
+        return getRecursiveHelper(sentinel.next, index);
+    }
+
+    private T getRecursiveHelper(Node node, int index) {
+        if (index == 0) {
+            return node.item;
+        }
+        return getRecursiveHelper(node.next, index - 1);
+    }
 
     /**
      * Creates an empty linked list deque.
@@ -97,4 +122,8 @@ public class LinkedListDeque<T> {
         size -= 1;
         return lastNode.item;
     }
+
+
+
+
 }
