@@ -1,6 +1,6 @@
-public class ArrayDeque {
+public class ArrayDeque<T> {
     private int size;
-    private int[] items;
+    private T[] items;
     private int nextFirst;
     private int nextLast;
     private static final int RFACTOR = 2;
@@ -8,13 +8,13 @@ public class ArrayDeque {
     private static final int INIT_CAPACITY = 8;
 
     public ArrayDeque() {
-        items = new int[INIT_CAPACITY];
+        items = (T[]) new Object[INIT_CAPACITY];
         size = 0;
         nextFirst = 0;
         nextLast = 1;
     }
 
-    public void addFirst(int item) {
+    public void addFirst(T item) {
         if (size == items.length) {
             resize(size * RFACTOR);
         }
@@ -23,7 +23,7 @@ public class ArrayDeque {
         size += 1;
     }
 
-    public void addLast(int item) {
+    public void addLast(T item) {
         if (size == items.length) {
             resize(size * RFACTOR);
         }
@@ -41,7 +41,7 @@ public class ArrayDeque {
     }
 
     public void resize(int capacity) {
-        int[] a = new int[capacity];
+        T[] a = (T[]) new Object[capacity];
         int current = plusOne(nextFirst);
         for (int i = 0; i < size; i++) {
             a[i] = items[current];
@@ -60,13 +60,13 @@ public class ArrayDeque {
         return (index + 1) % items.length;
     }
 
-    public int removeFirst() {
+    public T removeFirst() {
         if (size == 0) {
-            return 0;
+            return null;
         }
         int first = plusOne(nextFirst);
-        int firstItem = items[first];
-        items[first] = 0;
+        T firstItem = items[first];
+        items[first] = null;
         nextFirst = first;
         size -= 1;
         if (items.length >= 16 && size < items.length * MIN_USAGE_RATIO) {
@@ -75,13 +75,13 @@ public class ArrayDeque {
         return firstItem;
     }
 
-    public int removeLast() {
+    public T removeLast() {
         if (size == 0) {
-            return 0;
+            return null;
         }
         int last = minusOne(nextLast);
-        int lastItem = items[last];
-        items[last] = 0;
+        T lastItem = items[last];
+        items[last] = null;
         nextLast = last;
         size -= 1;
         if (items.length >= 16 && size < items.length * MIN_USAGE_RATIO) {
