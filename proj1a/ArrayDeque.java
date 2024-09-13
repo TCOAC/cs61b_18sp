@@ -1,93 +1,90 @@
 public class ArrayDeque<T> {
-    private int size;
-    private T[] items;
+
     private int nextFirst;
     private int nextLast;
-    private static final int RFACTOR = 2;
-    private static final double MIN_USAGE_RATIO = 0.25;
-    private static final int INIT_CAPACITY = 8;
-
-    public ArrayDeque() {
-        items = (T[]) new Object[INIT_CAPACITY];
-        size = 0;
-        nextFirst = 0;
-        nextLast = 1;
+    private int capacity;
+    private T[]items;
+    private int size;
+    public ArrayDeque(){
+        items=(T[])new Object[8];
+        this.capacity=items.length;
+        nextFirst=capacity-1;
+        nextLast=0;
+        size=0;
     }
-
+    private void resize(int capacity){
+        T[]a=(T[])new Object[capacity];
+        //由于nextFirst和nextLast的位置不确定，只能一个一个地复制到新的数组中
+        //从nextFirst右边的第一个点开始复制
+        //到nextLast左边的第一个点复制结束
+        for (int i=1;i<=size;i++)
+            a[i]=items[(++nextFirst)%this.capacity];
+        this.capacity=capacity;
+        //这两个指针指向什么地方已经不重要了
+        nextFirst=0;
+        nextLast=size+1;
+        items=a;
+    }
     public void addFirst(T item) {
-        if (size == items.length) {
-            resize(size * RFACTOR);
-        }
-        items[nextFirst] = item;
-        nextFirst = minusOne(nextFirst);
-        size += 1;
+        //直接当size等于capacity时调整大小，而不是看两个指针的相对位置
+        if (size==capacity)
+            resize(capacity*2);
+        items[nextFirst]=item;
+        size++;
+        //nextFirst有可能越界
+        nextFirst=nextFirst==0?capacity-1:nextFirst-1;
     }
 
     public void addLast(T item) {
-        if (size == items.length) {
-            resize(size * RFACTOR);
-        }
-        items[nextLast] = item;
-        nextLast = plusOne(nextLast);
-        size += 1;
+        if (size==capacity)
+            resize(capacity*2);
+        items[nextLast]=item;
+        size++;
+        //nextLast有可能越界
+        nextLast=(nextLast+1)%capacity;
     }
 
     public boolean isEmpty() {
-        return size == 0;
+        return size==0;
     }
 
     public int size() {
         return size;
     }
 
-    public void resize(int capacity) {
-        T[] a = (T[]) new Object[capacity];
-        int current = plusOne(nextFirst);
-        for (int i = 0; i < size; i++) {
-            a[i] = items[current];
-            current = plusOne(current);
-        }
-        items = a;
-        nextFirst = capacity - 1;
-        nextLast = size;
-    }
-
-    private int minusOne(int index) {
-        return (index - 1 + items.length) % items.length;
-    }
-
-    private int plusOne(int index) {
-        return (index + 1) % items.length;
+    public void printDeque() {
+        //nextFirst有可能指向最后一个位置
+        for (int i=(nextFirst+1)%capacity;i!=nextLast-1;i=(i+1)%capacity)
+            System.out.print(items[i]+" ");
+        System.out.print(items[nextLast-1]);
     }
 
     public T removeFirst() {
-        if (size == 0) {
-            return null;
-        }
-        int first = plusOne(nextFirst);
-        T firstItem = items[first];
-        items[first] = null;
-        nextFirst = first;
-        size -= 1;
-        if (items.length >= 16 && size < items.length * MIN_USAGE_RATIO) {
-            resize(items.length / RFACTOR);
-        }
-        return firstItem;
+        //当数组的内容为空的时候，才无法进行remove操作，而不是取决于nextFirst的位置。
+        if (size==0)return null;
+        nextFirst=(nextFirst+1)%capacity;
+        T temp=items[nextFirst];
+        items[nextFirst]=null;
+        size--;
+        if (capacity>=16&&size<capacity/4)
+            resize(capacity/2);
+        return temp;
     }
 
     public T removeLast() {
-        if (size == 0) {
-            return null;
-        }
-        int last = minusOne(nextLast);
-        T lastItem = items[last];
-        items[last] = null;
-        nextLast = last;
-        size -= 1;
-        if (items.length >= 16 && size < items.length * MIN_USAGE_RATIO) {
-            resize(items.length / RFACTOR);
-        }
-        return lastItem;
+        if (size==0)return null;
+        nextLast=nextLast==0?capacity-1:nextLast-1;
+        T temp=items[nextLast];
+        items[nextLast]=null;
+        size--;
+        if (capacity>=16&&size<capacity/4)
+            resize(capacity/2);
+        return temp;
     }
 
+    public T get(int index) {
+        if (index>=size)
+            return null;
+        return items[(nextFirst+1+index)%capacity];
+    }
 }
